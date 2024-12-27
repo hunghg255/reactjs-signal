@@ -28,6 +28,17 @@ declare class AsyncComputed<T = any> extends Computed {
   update(): Promise<boolean>;
 }
 
+const hydratedMap: WeakMap<IWritableSignal<any>, WeakSet<IWritableSignal<any>>> = new WeakMap()
+
+const getHydratedSet = (store: IWritableSignal<any>) => {
+  let hydratedSet = hydratedMap.get(store)
+  if (!hydratedSet) {
+    hydratedSet = new WeakSet()
+    hydratedMap.set(store, hydratedSet)
+  }
+  return hydratedSet
+}
+
 /**
  * Creates a writable Alien Signal.
  *
@@ -461,5 +472,10 @@ export function unstable_useAsyncEffect<T>(fn: () => AsyncGenerator<Dependency, 
  * @param {T} value - The value to hydrate the signal with.
  */
 export function useHydrateSignal<T>(alienSignal: IWritableSignal<T>, value: T): void {
+  const hydratedSet = getHydratedSet(alienSignal)
+
+  if (hydratedSet.has(alienSignal)) return
+
+  hydratedSet.add(alienSignal)
   alienSignal.set(value);
 }
