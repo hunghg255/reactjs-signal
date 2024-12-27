@@ -328,6 +328,35 @@ function ScopedEffects() {
 }
 ```
 
+<!-- /**
+ * React hook to initialize a signal with a value when hydrating from server.
+ * @param alienSignal
+ * @param value
+ * @returns
+ *
+ * @template T - The type of the signal value.
+ * @param {IWritableSignal<T>} alienSignal - The signal to hydrate.
+ * @param {T} value - The value to hydrate the signal with.
+ */
+export function useHydrateSignal<T>(alienSignal: IWritableSignal<T>, value: T): void {
+  alienSignal.set(value);
+} -->
+
+### `useHydrateSignal`
+
+React hook to initialize a signal with a value when hydrating from server.
+
+#### Example
+
+```typescript
+const countSignal = createSignal(0);
+useHydrateSignal(countSignal, 10);
+```
+
+#### Parameters
+- `alienSignal`: The signal to hydrate.
+- `value`: initial value
+
 #### Returns
 
 - `EffectScope`: The created effect scope.
