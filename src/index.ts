@@ -285,6 +285,7 @@ export function useSignalValue<T>(alienSignal: IWritableSignal<T>): T {
       return () => eff.stop();
     },
     () => alienSignal.get(),
+    () => alienSignal.get(),
   );
 }
 
