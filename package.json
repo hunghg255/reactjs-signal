@@ -1,0 +1,56 @@
+{
+  "name": "reactjs-signal",
+  "version": "1.0.1",
+  "description": "",
+  "type": "module",
+  "types": "./dist/index.d.ts",
+  "module": "./dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "watch": "npm run build -- --watch src",
+    "prepublishOnly": "npm run build",
+    "lint": "tsc",
+    "start": "esno src/index.ts",
+    "test": "vitest",
+    "verify-commit": "verify-commit-msg",
+    "prepare": "git-scm-hooks",
+    "release": "bumpp -r && npm publish"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/react": "^19.0.2",
+    "bumpp": "^9.2.1",
+    "git-scm-hooks": "^0.0.7",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3",
+    "verify-commit-msg": "^0.0.10"
+  },
+  "git-hooks": {
+    "pre-commit": "npm run lint",
+    "commit-msg": "npm run verify-commit"
+  },
+  "peerDependencies": {
+    "alien-signals": ">=0.4",
+    "react": ">=18"
+  },
+  "bugs": {
+    "url": "https://github.com/hunghg255/reactjs-signal/issues"
+  },
+  "homepage": "https://github.com/hunghg255/reactjs-signal#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hunghg255/reactjs-signal.git"
+  }
+}
