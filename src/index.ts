@@ -7,26 +7,13 @@
  * @module reactjs-signal
  */
 
-import {
-  computed as alienComputed,
-  effect as alienEffect,
-  effectScope as alienEffectScope,
-  signal as alienSignal,
-  unstable as alienUnstable,
-  type Effect,
-  type Computed,
-  type Dependency,
-  type EffectScope,
-  type ISignal,
-  type IWritableSignal,
-} from 'alien-signals';
+import { signal, computed, effect, effectScope } from 'alien-signals';
 import { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 
-declare class AsyncComputed<T = any> extends Computed {
-  get(): Promise<T>;
-  //@ts-ignore
-  update(): Promise<boolean>;
-}
+type IWritableSignal<T> = {
+  (): T;
+  (value: T): void;
+};
 
 const hydratedMap: WeakMap<IWritableSignal<any>, WeakSet<IWritableSignal<any>>> = new WeakMap()
 
@@ -45,15 +32,48 @@ const getHydratedSet = (store: IWritableSignal<any>) => {
  * @example
  * ```typescript
  * const countSignal = createSignal(0);
- * countSignal.set(10); // sets the value to 10
+ * countSignal(10); // sets the value to 10
  * ```
  *
  * @template T - The type of the signal value.
  * @param {T} initialValue - The initial value of the signal.
  * @returns {IWritableSignal<T>} The created Alien Signal.
  */
-export function createSignal<T>(initialValue: T): IWritableSignal<T> {
-  return alienSignal<T>(initialValue);
+export function createSignal<T>(initialValue: T) {
+  return signal<T>(initialValue);
+}
+
+
+/**
+ * Creates a writable Alien Signal that persists its value in localStorage.
+ *
+ * @template T - The type of the signal value.
+ * @param {string} key - The localStorage key to use for persistence.
+ * @param {T} initialValue - The initial value of the signal.
+ * @returns {IWritableSignal<T>} The created Alien Signal.
+ */
+export function createSignalStorage<T>(key: string, initialValue: T): IWritableSignal<T> {
+  const storedValue = localStorage.getItem(key);
+  let initial: T;
+
+  if (storedValue) {
+    try {
+      initial = JSON.parse(storedValue) as T;
+    } catch (e) {
+      console.error(`Error parsing localStorage for key "${key}", using initial value.`, e);
+      initial = initialValue;
+    }
+  } else {
+    initial = initialValue;
+  }
+
+  const signalInstance = createSignal<T>(initial);
+
+  createEffect(() => {
+    localStorage.setItem(key, JSON.stringify(signalInstance()));
+  });
+
+  return signalInstance;
 }
 
 /**
@@ -62,15 +82,15 @@ export function createSignal<T>(initialValue: T): IWritableSignal<T> {
  * @example
  * ```typescript
  * const countSignal = createSignal(1);
- * const doubleSignal = createComputed(() => countSignal.get() * 2);
+ * const doubleSignal = createComputed(() => countSignal() * 2);
  * ```
  *
  * @template T - The type of the computed value.
  * @param {() => T} fn - A getter function returning a computed value.
  * @returns {ISignal<T>} The created computed signal.
  */
-export function createComputed<T>(fn: () => T): ISignal<T> {
-  return alienComputed<T>(fn);
+export function createComputed<T>(fn: () => T) {
+  return computed<T>(fn);
 }
 
 /**
@@ -80,7 +100,7 @@ export function createComputed<T>(fn: () => T): ISignal<T> {
  * ```typescript
  * const countSignal = createSignal(1);
  * createEffect(() => {
- *   console.log('Count is', countSignal.get());
+ *   console.log('Count is', countSignal());
  * });
  * ```
  *
@@ -88,140 +108,8 @@ export function createComputed<T>(fn: () => T): ISignal<T> {
  * @param {() => T} fn - A function that will run whenever its tracked signals update.
  * @returns {Effect<T>} The created effect object.
  */
-export function createEffect<T>(fn: () => T): Effect<T> {
-  return alienEffect(fn);
-}
-
-/**
- * Creates an Alien Signals effect scope. This scope can manage multiple effects,
- * allowing you to stop or start them together.
- *
- * @example
- * ```typescript
- * const scope = createSignalScope();
- * scope.run(() => {
- *   // create effects in here...
- * });
- * ```
- *
- * @returns {EffectScope} The created effect scope.
- */
-export function createSignalScope(): EffectScope {
-  return alienEffectScope();
-}
-
-/**
- * Creates an async computed signal in Alien Signals. The getter is an async generator
- * that yields dependencies and finally resolves to a computed value.
- *
- * @example
- * ```typescript
- * const asyncComp = createAsyncComputed<number>(async function* () {
- *   yield someDependency;
- *   return 42;
- * });
- * ```
- *
- * @template T - The type of the computed value.
- * @param {() => AsyncGenerator<Dependency, T>} getter - An async generator returning dependencies and ultimately a value.
- * @returns {AsyncComputed<T>} The created async computed signal.
- * @experimental
- */
-export function unstable_createAsyncComputed<T>(
-  getter: () => AsyncGenerator<Dependency, T>,
-): AsyncComputed<T> {
-  return alienUnstable.asyncComputed<T>(getter);
-}
-
-/**
- * Creates an async effect in Alien Signals. The function is an async generator
- * that yields dependencies as they are discovered.
- *
- * @example
- * ```typescript
- * createAsyncEffect(async function* () {
- *   yield someDependency;
- *   console.log('Async effect done!');
- * });
- * ```
- *
- * @template T - The type of the effect value.
- * @param {() => AsyncGenerator<Dependency, T>} fn - An async generator returning dependencies.
- * @returns {Promise<T>} The created async effect object.
- */
-export async function unstable_createAsyncEffect<T>(
-  fn: () => AsyncGenerator<Dependency, T>,
-): Promise<T> {
-  const eff = alienUnstable.asyncEffect(fn);
-
-  // Immediately run the effect and return its promise
-  const final = await eff.run();
-  return final;
-}
-
-/**
- * Creates a computed array signal in Alien Signals, deriving a reactive
- * array from an original signal array.
- *
- * @example
- * ```typescript
- * const numbersSignal = createSignal([1, 2, 3]);
- * const compArray = createComputedArray(numbersSignal, (itemSignal, i) => () => {
- *   return itemSignal.get() * 2;
- * });
- * ```
- *
- * @template I - The type of the items in the input array.
- * @template O - The type of the items in the output array.
- * @param {ISignal<I[]>} arr - Signal containing an array.
- * @param {(itemSignal: ISignal<I>, index: number) => () => O} getGetter - A function returning a getter for each item signal.
- * @returns {Readonly<O[]>} A proxied array signal.
- * @experimental
- */
-export function unstable_createComputedArray<I, O>(
-  arr: ISignal<I[]>,
-  getGetter: (itemSignal: ISignal<I>, index: number) => () => O,
-): Readonly<O[]> {
-  return alienUnstable.computedArray<I, O>(arr, getGetter);
-}
-
-/**
- * Creates a computed Set signal in Alien Signals that tracks changes
- * to a source Set signal.
- *
- * @example
- * ```typescript
- * const setSignal = createSignal(new Set([1, 2]));
- * const compSet = createComputedSet(setSignal);
- * ```
- *
- * @template T - The type of the items in the Set.
- * @param {IWritableSignal<Set<T>>} source - A signal containing a Set.
- * @returns {ISignal<Set<T>>} A computed signal referencing that Set.
- * @experimental
- */
-export function unstable_createComputedSet<T>(source: IWritableSignal<Set<T>>): ISignal<Set<T>> {
-  return alienUnstable.computedSet<T>(source);
-}
-
-/**
- * Creates an equality-based computed signal, only updating when the new value
- * is not deeply equal to the old value.
- *
- * @example
- * ```typescript
- * const eqComp = createEqualityComputed(() => {
- *   return { foo: 'bar' };
- * });
- * ```
- *
- * @template T - The type of the computed value.
- * @param {() => T} getter - A function returning the value to compare.
- * @returns {ISignal<T>} An equality computed signal.
- * @experimental
- */
-export function unstable_createEqualityComputed<T>(getter: () => T): ISignal<T> {
-  return alienUnstable.equalityComputed(getter);
+export function createEffect<T>(fn: () => T) {
+  return effect(fn);
 }
 
 /**
@@ -246,21 +134,21 @@ export function useSignal<T>(
 ): [T, (val: T | ((oldVal: T) => T)) => void] {
   const value = useSyncExternalStore(
     (callback) => {
-      const eff = alienEffect(() => {
-        alienSignal.get(); // track
+      const eff = effect(() => {
+        alienSignal(); // track
         callback();
       });
-      return () => eff.stop();
+      return () => eff();
     },
-    () => alienSignal.get(),
-    () => alienSignal.get(), // server snapshot
+    () => alienSignal(),
+    () => alienSignal(), // server snapshot
   );
 
   const setValue = (val: T | ((oldVal: T) => T)) => {
     if (typeof val === 'function') {
-      alienSignal.set((val as (oldVal: T) => T)(alienSignal.get()));
+      alienSignal((val as (oldVal: T) => T)(alienSignal()));
     } else {
-      alienSignal.set(val);
+      alienSignal(val);
     }
   };
 
@@ -274,7 +162,7 @@ export function useSignal<T>(
  * @example
  * ```typescript
  * const countSignal = createSignal(0);
- * const doubleSignal = createComputed(() => countSignal.get() * 2);
+ * const doubleSignal = createComputed(() => countSignal() * 2);
  * function Display() {
  *   const count = useSignalValue(countSignal);
  *   const double = useSignalValue(doubleSignal);
@@ -289,14 +177,14 @@ export function useSignal<T>(
 export function useSignalValue<T>(alienSignal: IWritableSignal<T>): T {
   return useSyncExternalStore(
     (callback) => {
-      const eff = alienEffect(() => {
-        alienSignal.get();
+      const eff = effect(() => {
+        alienSignal();
         callback();
       });
-      return () => eff.stop();
+      return () => eff();
     },
-    () => alienSignal.get(),
-    () => alienSignal.get(),
+    () => alienSignal(),
+    () => alienSignal(),
   );
 }
 
@@ -322,9 +210,9 @@ export function useSetSignal<T>(
 ): (val: T | ((oldVal: T) => T)) => void {
   return (val) => {
     if (typeof val === 'function') {
-      alienSignal.set((val as (oldVal: T) => T)(alienSignal.get()));
+      alienSignal((val as (oldVal: T) => T)(alienSignal()));
     } else {
-      alienSignal.set(val);
+      alienSignal(val);
     }
   };
 }
@@ -337,7 +225,7 @@ export function useSetSignal<T>(
  * ```typescript
  * function Logger() {
  *   useSignalEffect(() => {
- *     console.log('Signal changed:', someSignal.get());
+ *     console.log('Signal changed:', someSignal());
  *   });
  *   return null;
  * }
@@ -347,117 +235,8 @@ export function useSetSignal<T>(
  */
 export function useSignalEffect(fn: () => void): void {
   useEffect(() => {
-    const eff = alienEffect(fn);
-    return () => eff.stop();
-  }, [fn]);
-}
-
-/**
- * React hook for managing an Alien Signals effect scope.
- * All signals/effects created inside this scope run when the component mounts,
- * and are stopped automatically when the component unmounts.
- *
- * @example
- * ```typescript
- * function ScopedEffects() {
- *   const scope = useSignalScope();
- *   useEffect(() => {
- *     scope.run(() => {
- *       createEffect(() => {
- *         console.log('Scoped effect:', someSignal.get());
- *       });
- *     });
- *   }, [scope]);
- *   return null;
- * }
- * ```
- *
- * @returns {EffectScope} The created effect scope.
- */
-export function useSignalScope(): EffectScope {
-  const scope = useMemo(() => alienEffectScope(), []);
-  useEffect(() => {
-    return () => {
-      scope.stop();
-    };
-  }, [scope]);
-  return scope;
-}
-
-/**
- * React hook to read from an async computed signal.
- * The hook fetches the current value, subscribing to changes via useSyncExternalStore,
- * and triggers a get() call to retrieve updated data. Maintains an internal state
- * for the resolved value of the promise.
- *
- * @example
- * ```typescript
- * const asyncSignal = createAsyncComputed<number>(async function*() {
- *   const val = someSignal.get();
- *   yield Promise.resolve(someSignal); // track async dep
- *   return val * 2;
- * });
- *
- * function AsyncDisplay() {
- *   const value = useAsyncComputedValue(asyncSignal);
- *   return <div>Value: {String(value)}</div>;
- * }
- * ```
- *
- * @template T - The type of the computed value.
- * @param {AsyncComputed<T>} alienAsyncComp - The async computed signal to read.
- * @returns {T | undefined} The resolved value (or undefined if not yet resolved).
- * @experimental
- */
-export function unstable_useAsyncComputedValue<T>(alienAsyncComp: AsyncComputed<T>): T | undefined {
-  const [value, setValue] = useState<T | undefined>(alienAsyncComp.currentValue);
-
-  useSyncExternalStore(
-    (callback) => {
-      const eff = alienEffect(() => {
-        alienAsyncComp.currentValue; // track
-        callback();
-      });
-      return () => eff.stop();
-    },
-    () => alienAsyncComp.currentValue,
-  );
-
-  useEffect(() => {
-    let active = true;
-    const fetchValue = async () => {
-      const val = await alienAsyncComp.get();
-      if (active) setValue(val);
-    };
-    fetchValue();
-    return () => {
-      active = false;
-    };
-  }, [alienAsyncComp]);
-
-  return value;
-}
-
-/**
- * React hook to run an asynchronous effect whenever the component mounts,
- * cleaning up when it unmounts.
- *
- * @example
- * ```typescript
- * useAsyncEffect(async function* () {
- *   yield someDependency;
- *   console.log('Async side effect complete!');
- * });
- * ```
- *
- * @template T - The type of the effect value.
- * @param {() => AsyncGenerator<Dependency, T>} fn - An async generator representing the effect logic.
- * @experimental
- */
-export function unstable_useAsyncEffect<T>(fn: () => AsyncGenerator<Dependency, T>): void {
-  useEffect(() => {
-    const eff = alienUnstable.asyncEffect(fn);
-    return () => eff.stop();
+    const eff = effect(fn);
+    return () => eff();
   }, [fn]);
 }
 
@@ -477,5 +256,5 @@ export function useHydrateSignal<T>(alienSignal: IWritableSignal<T>, value: T): 
   if (hydratedSet.has(alienSignal)) return
 
   hydratedSet.add(alienSignal)
-  alienSignal.set(value);
+  alienSignal(value);
 }

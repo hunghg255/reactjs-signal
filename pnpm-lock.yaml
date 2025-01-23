@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       alien-signals:
-        specifier: '>=0.4'
-        version: 0.4.11
+        specifier: ^1.0.1
+        version: 1.0.1
       react:
         specifier: '>=18'
         version: 19.0.0
@@ -594,8 +594,8 @@ packages:
     engines: {node: '>=0.4.0'}
     hasBin: true
 
-  alien-signals@0.4.11:
-    resolution: {integrity: sha512-79GUbcQM5K2zb+HyUMODTgJdVjZWwybDNQRduqP9ks7XZvJylm9uWesOjVcu6/veWsa+XNGVE4xVQ8+RGu8HaA==}
+  alien-signals@1.0.1:
+    resolution: {integrity: sha512-oOo4M4xdTUCFK2oG2shusk7FR4hmpg0OJGlGEeLwQYctoJ+6UWOpHtU6Y6rBuFUaR34mgLpakcCFKeGFaoeJ0A==}
 
   ansi-regex@5.0.1:
     resolution: {integrity: sha512-quJQXlTSUGL2LH9SUXo8VwsY4soanhgo6LNSm84E1LBcE8s3O0wpdiRzyR9z/ZZJMlMWv37qOOb9pdJlMUEKFQ==}
@@ -2075,7 +2075,7 @@ snapshots:
 
   acorn@8.14.0: {}
 
-  alien-signals@0.4.11: {}
+  alien-signals@1.0.1: {}
 
   ansi-regex@5.0.1: {}
 
