@@ -42,7 +42,8 @@
     "commit-msg": "npm run verify-commit"
   },
   "peerDependencies": {
-    "react": ">=18"
+    "react": ">=18",
+    "alien-signals": ">=1.0.0"
   },
   "bugs": {
     "url": "https://github.com/hunghg255/reactjs-signal/issues"

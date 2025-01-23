@@ -15,12 +15,17 @@
   <a href="https://github.com/hunghg255/reactjs-signal/blob/main/LICENSE" target="_blank" rel="noopener noreferrer"><img src="https://badgen.net/github/license/hunghg255/reactjs-signal" alt="License" /></a>
 </p>
 
+
+
 ## Installation
 
 ```bash
 npm install reactjs-signal
 ```
 
+## Devtools
+
+- [reactjs-signal-devtools](https://github.com/hunghg255/reactjs-signal-devtools)
 
 ## Usage
 
@@ -50,7 +55,7 @@ Creates a writable Alien Signal.
 
 ```typescript
 const countSignal = createSignal(0);
-countSignal.set(10); // sets the value to 10
+countSignal(10); // sets the value to 10
 ```
 
 #### Parameters
@@ -69,7 +74,7 @@ Creates a computed Alien Signal based on a getter function.
 
 ```typescript
 const countSignal = createSignal(1);
-const doubleSignal = createComputed(() => countSignal.get() * 2);
+const doubleSignal = createComputed(() => countSignal() * 2);
 ```
 
 #### Parameters
@@ -80,43 +85,6 @@ const doubleSignal = createComputed(() => countSignal.get() * 2);
 
 - `ISignal<T>`: The created computed signal.
 
-### `createEffect`
-
-Creates a side effect in Alien Signals.
-
-#### Example
-
-```typescript
-const countSignal = createSignal(1);
-createEffect(() => {
-  console.log('Count is', countSignal.get());
-});
-```
-
-#### Parameters
-
-- `fn` (`() => T`): A function that will run whenever its tracked signals update.
-
-#### Returns
-
-- `Effect<T>`: The created effect object.
-
-### `createSignalScope`
-
-Creates an Alien Signals effect scope. This scope can manage multiple effects, allowing you to stop or start them together.
-
-#### Example
-
-```typescript
-const scope = createSignalScope();
-scope.run(() => {
-  // create effects in here...
-});
-```
-
-#### Returns
-
-- `EffectScope`: The created effect scope.
 
 ### `useSignal`
 
@@ -148,7 +116,7 @@ React hook returning only the current value of an Alien Signal (or computed). No
 
 ```typescript
 const countSignal = createSignal(0);
-const doubleSignal = createComputed(() => countSignal.get() * 2);
+const doubleSignal = createComputed(() => countSignal() * 2);
 function Display() {
   const count = useSignalValue(countSignal);
   const double = useSignalValue(doubleSignal);
@@ -195,7 +163,7 @@ React hook for running a side effect whenever Alien Signals' dependencies used i
 ```typescript
 function Logger() {
   useSignalEffect(() => {
-    console.log('Signal changed:', someSignal.get());
+    console.log('Signal changed:', someSignal());
   });
   return null;
 }
@@ -205,25 +173,6 @@ function Logger() {
 
 - `fn` (`() => void`): The effect function to run.
 
-### `useSignalScope`
-
-React hook for managing an Alien Signals effect scope. All signals/effects created inside this scope run when the component mounts, and are stopped automatically when the component unmounts.
-
-#### Example
-
-```typescript
-function ScopedEffects() {
-  const scope = useSignalScope();
-  useEffect(() => {
-    scope.run(() => {
-      createEffect(() => {
-        console.log('Scoped effect:', someSignal.get());
-      });
-    });
-  }, [scope]);
-  return null;
-}
-```
 
 <!-- /**
  * React hook to initialize a signal with a value when hydrating from server.
@@ -236,7 +185,7 @@ function ScopedEffects() {
  * @param {T} value - The value to hydrate the signal with.
  */
 export function useHydrateSignal<T>(alienSignal: IWritableSignal<T>, value: T): void {
-  alienSignal.set(value);
+  alienSignal(value);
 } -->
 
 ### `useHydrateSignal`

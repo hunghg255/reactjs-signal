@@ -7,8 +7,8 @@
  * @module reactjs-signal
  */
 
-import { signal, computed, effect, effectScope } from 'alien-signals';
-import { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
+import { computed, effect, signal } from 'alien-signals';
+import { useEffect, useSyncExternalStore } from 'react';
 
 type IWritableSignal<T> = {
   (): T;
@@ -237,7 +237,7 @@ export function useSignalEffect(fn: () => void): void {
   useEffect(() => {
     const eff = effect(fn);
     return () => eff();
-  }, [fn]);
+  }, []);
 }
 
 /**
