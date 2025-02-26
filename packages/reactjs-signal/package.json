@@ -1,0 +1,50 @@
+{
+  "name": "reactjs-signal",
+  "type": "module",
+  "version": "1.1.1",
+  "description": "",
+  "author": "",
+  "license": "ISC",
+  "homepage": "https://github.com/hunghg255/reactjs-signal#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hunghg255/reactjs-signal.git"
+  },
+  "bugs": {
+    "url": "https://github.com/hunghg255/reactjs-signal/issues"
+  },
+  "keywords": [
+    "react",
+    "reactjs-signal",
+    "devtools"
+  ],
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "prepublishOnly": "pnpm run build"
+  },
+  "dependencies": {
+    "alien-signals": "^1.0.4"
+  },
+  "peerDependencies": {
+    "alien-signals": ">=1.0.0",
+    "react": ">=18"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.2",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3"
+  }
+}

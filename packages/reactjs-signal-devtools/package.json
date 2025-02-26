@@ -1,0 +1,47 @@
+{
+  "name": "reactjs-signal-devtools",
+  "type": "module",
+  "version": "1.1.1",
+  "description": "Devtools for Reactjs Signal",
+  "author": "hunghg255",
+  "license": "MIT",
+  "repository": "hunghg255/reactjs-signal-devtools",
+  "keywords": [
+    "react",
+    "reactjs-signal",
+    "devtools"
+  ],
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "prepublishOnly": "pnpm run build"
+  },
+  "dependencies": {
+    "reactjs-signal": "workspace:*"
+  },
+  "peerDependencies": {
+    "@types/react": ">=18.0.0",
+    "@types/react-dom": ">=18.0.0",
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0",
+    "reactjs-signal": ">=1.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "tsup": "^8.4.0",
+    "typescript": "^5.3.3"
+  }
+}

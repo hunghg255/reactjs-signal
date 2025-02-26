@@ -1,4 +1,3 @@
-'use client';
 /**
  *
  * React Alien Signals is a **TypeScript** library that provides hooks built on top of [Alien Signals](https://github.com/stackblitz/alien-signals).
@@ -7,23 +6,24 @@
  * @module reactjs-signal
  */
 
-import { computed, effect, signal } from 'alien-signals';
 import { useEffect, useSyncExternalStore } from 'react';
 
-type IWritableSignal<T> = {
+import { computed, effect, signal } from 'alien-signals';
+
+export type TWritableSignal<T> = {
   (): T;
   (value: T): void;
 };
 
-const hydratedMap: WeakMap<IWritableSignal<any>, WeakSet<IWritableSignal<any>>> = new WeakMap()
+const hydratedMap = new WeakMap<TWritableSignal<any>, WeakSet<TWritableSignal<any>>>();
 
-const getHydratedSet = (store: IWritableSignal<any>) => {
-  let hydratedSet = hydratedMap.get(store)
+function getHydratedSet (store: TWritableSignal<any>) {
+  let hydratedSet = hydratedMap.get(store);
   if (!hydratedSet) {
-    hydratedSet = new WeakSet()
-    hydratedMap.set(store, hydratedSet)
+    hydratedSet = new WeakSet();
+    hydratedMap.set(store, hydratedSet);
   }
-  return hydratedSet
+  return hydratedSet;
 }
 
 /**
@@ -37,12 +37,11 @@ const getHydratedSet = (store: IWritableSignal<any>) => {
  *
  * @template T - The type of the signal value.
  * @param {T} initialValue - The initial value of the signal.
- * @returns {IWritableSignal<T>} The created Alien Signal.
+ * @returns {TWritableSignal<T>} The created Alien Signal.
  */
-export function createSignal<T>(initialValue: T) {
+export function createSignal<T>(initialValue: T): TWritableSignal<T> {
   return signal<T>(initialValue);
 }
-
 
 /**
  * Creates a writable Alien Signal that persists its value in localStorage.
@@ -50,9 +49,9 @@ export function createSignal<T>(initialValue: T) {
  * @template T - The type of the signal value.
  * @param {string} key - The localStorage key to use for persistence.
  * @param {T} initialValue - The initial value of the signal.
- * @returns {IWritableSignal<T>} The created Alien Signal.
+ * @returns {TWritableSignal<T>} The created Alien Signal.
  */
-export function createSignalStorage<T>(key: string, initialValue: T): IWritableSignal<T> {
+export function createSignalStorage<T>(key: string, initialValue: T): TWritableSignal<T> {
   const storedValue = localStorage.getItem(key);
   let initial: T;
 
@@ -126,11 +125,11 @@ export function createEffect<T>(fn: () => T) {
  * ```
  *
  * @template T - The type of the signal value.
- * @param {IWritableSignal<T>} alienSignal - The signal to read/write.
+ * @param {TWritableSignal<T>} alienSignal - The signal to read/write.
  * @returns {[T, (val: T | ((oldVal: T) => T)) => void]} A tuple [currentValue, setValue].
  */
 export function useSignal<T>(
-  alienSignal: IWritableSignal<T>,
+  alienSignal: TWritableSignal<T>,
 ): [T, (val: T | ((oldVal: T) => T)) => void] {
   const value = useSyncExternalStore(
     (callback) => {
@@ -171,10 +170,10 @@ export function useSignal<T>(
  * ```
  *
  * @template T - The type of the signal value.
- * @param {IWritableSignal<T>} alienSignal - The signal to read.
+ * @param {TWritableSignal<T>} alienSignal - The signal to read.
  * @returns {T} The current value.
  */
-export function useSignalValue<T>(alienSignal: IWritableSignal<T>): T {
+export function useSignalValue<T>(alienSignal: TWritableSignal<T>): T {
   return useSyncExternalStore(
     (callback) => {
       const eff = effect(() => {
@@ -202,11 +201,11 @@ export function useSignalValue<T>(alienSignal: IWritableSignal<T>): T {
  * ```
  *
  * @template T - The type of the signal value.
- * @param {IWritableSignal<T>} alienSignal - The signal to write.
+ * @param {TWritableSignal<T>} alienSignal - The signal to write.
  * @returns {(val: T | ((oldVal: T) => T)) => void} A setter function.
  */
 export function useSetSignal<T>(
-  alienSignal: IWritableSignal<T>,
+  alienSignal: TWritableSignal<T>,
 ): (val: T | ((oldVal: T) => T)) => void {
   return (val) => {
     if (typeof val === 'function') {
@@ -247,14 +246,14 @@ export function useSignalEffect(fn: () => void): void {
  * @returns
  *
  * @template T - The type of the signal value.
- * @param {IWritableSignal<T>} alienSignal - The signal to hydrate.
+ * @param {TWritableSignal<T>} alienSignal - The signal to hydrate.
  * @param {T} value - The value to hydrate the signal with.
  */
-export function useHydrateSignal<T>(alienSignal: IWritableSignal<T>, value: T): void {
-  const hydratedSet = getHydratedSet(alienSignal)
+export function useHydrateSignal<T>(alienSignal: TWritableSignal<T>, value: T): void {
+  const hydratedSet = getHydratedSet(alienSignal);
 
-  if (hydratedSet.has(alienSignal)) return
+  if (hydratedSet.has(alienSignal)) return;
 
-  hydratedSet.add(alienSignal)
+  hydratedSet.add(alienSignal);
   alienSignal(value);
 }

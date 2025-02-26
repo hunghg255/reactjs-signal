@@ -1,59 +1,40 @@
 {
-  "name": "reactjs-signal",
-  "version": "1.1.1",
-  "description": "",
   "type": "module",
-  "types": "./dist/index.d.ts",
-  "module": "./dist/index.js",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.js"
-    }
-  },
-  "files": [
-    "dist"
-  ],
-  "scripts": {
-    "build": "tsup",
-    "watch": "npm run build -- --watch src",
-    "prepublishOnly": "npm run build",
-    "lint": "tsc",
-    "start": "esno src/index.ts",
-    "test": "vitest",
-    "verify-commit": "verify-commit-msg",
-    "prepare": "git-scm-hooks",
-    "release": "bumpp -r && npm publish"
-  },
-  "keywords": [],
-  "author": "",
+  "version": "1.1.1",
+  "private": true,
+  "packageManager": "pnpm@8.15.9",
+  "description": "",
+  "author": "hunghg255",
   "license": "ISC",
-  "devDependencies": {
-    "@types/react": "^19.0.2",
-    "bumpp": "^9.2.1",
-    "git-scm-hooks": "^0.0.7",
-    "tsup": "^8.0.1",
-    "typescript": "^5.3.3",
-    "verify-commit-msg": "^0.0.10"
-  },
-  "git-hooks": {
-    "pre-commit": "npm run lint",
-    "commit-msg": "npm run verify-commit"
-  },
-  "peerDependencies": {
-    "react": ">=18",
-    "alien-signals": ">=1.0.0"
-  },
-  "bugs": {
-    "url": "https://github.com/hunghg255/reactjs-signal/issues"
-  },
   "homepage": "https://github.com/hunghg255/reactjs-signal#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/hunghg255/reactjs-signal.git"
   },
-  "dependencies": {
-    "alien-signals": "^1.0.1"
+  "bugs": {
+    "url": "https://github.com/hunghg255/reactjs-signal/issues"
+  },
+  "keywords": [
+    "react",
+    "reactjs-signal",
+    "devtools"
+  ],
+  "scripts": {
+    "dev:playground": "pnpm run --filter=\"./playground\" dev",
+    "dev:build": "pnpm run --filter=\"./playground\" build",
+    "dev:preview": "pnpm run --filter=\"./playground\" preview",
+    "build": "pnpm run --filter=\"./packages/*\" build",
+    "dev": "pnpm run --filter=\"./packages/*\" dev",
+    "lint": "eslint --cache .",
+    "lint:fix": "pnpm run lint --fix",
+    "release": "bumpp -r && pnpm publish -r",
+    "prepublishOnly": "pnpm run build"
+  },
+  "devDependencies": {
+    "@hunghg255/eslint-config": "^0.0.16",
+    "@types/node": "^22.13.5",
+    "bumpp": "^9.2.1",
+    "eslint": "^9.21.0",
+    "typescript": "^5.5.4"
   }
 }
