@@ -25,8 +25,7 @@
   ],
   "scripts": {
     "build": "tsup",
-    "dev": "tsup --watch",
-    "prepublishOnly": "pnpm run build"
+    "dev": "tsup --watch"
   },
   "dependencies": {
     "reactjs-signal": "workspace:*"
