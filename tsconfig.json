@@ -14,6 +14,6 @@
     "skipDefaultLibCheck": true,
     "skipLibCheck": true
   },
-  "include": ["packages/*/src", "packages/*/tests", "packages/*/tsup.config.ts", "packages/*/unbuild.config.ts"],
+  "include": ["packages/*/src", "packages/*/tests", "packages/*/tsup.config.ts", "bump.config.ts"],
   "exclude": ["packages/*/tests/fixtures"]
 }
