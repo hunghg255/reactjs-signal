@@ -2,7 +2,7 @@
 
 Inspect your [reactjs-signal](https://github.com/hunghg255/reactjs-signal) store in React DevTools 🐻⚛️
 
-<img width="500" src="/assets/devtools.png"/>
+<img width="500" src="https://raw.githubusercontent.com/hunghg255/reactjs-signal/refs/heads/main/packages/reactjs-signal-devtools/assets/devtools.png"/>
 
 ## Usage
 
