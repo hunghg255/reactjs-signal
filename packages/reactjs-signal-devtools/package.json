@@ -1,7 +1,7 @@
 {
   "name": "reactjs-signal-devtools",
   "type": "module",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "Devtools for Reactjs Signal",
   "author": "hunghg255",
   "license": "MIT",
