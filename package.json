@@ -27,7 +27,7 @@
     "dev": "pnpm run --filter=\"./packages/*\" dev",
     "lint": "eslint",
     "lint:fix": "pnpm run lint --fix",
-    "release": "bumpp -r && pnpm publish -r",
+    "release": "bumpp -r && pnpm -r publish --access public --no-git-checks",
     "prepublishOnly": "pnpm run build"
   },
   "devDependencies": {
