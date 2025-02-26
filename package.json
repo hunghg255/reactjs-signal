@@ -25,7 +25,7 @@
     "dev:preview": "pnpm run --filter=\"./playground\" preview",
     "build": "pnpm run --filter=\"./packages/*\" build",
     "dev": "pnpm run --filter=\"./packages/*\" dev",
-    "lint": "eslint --cache .",
+    "lint": "eslint",
     "lint:fix": "pnpm run lint --fix",
     "release": "bumpp -r && pnpm publish -r",
     "prepublishOnly": "pnpm run build"
