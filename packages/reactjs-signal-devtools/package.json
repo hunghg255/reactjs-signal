@@ -5,7 +5,6 @@
   "description": "Devtools for Reactjs Signal",
   "author": "hunghg255",
   "license": "MIT",
-  "repository": "hunghg255/reactjs-signal-devtools",
   "keywords": [
     "react",
     "reactjs-signal",
@@ -42,5 +41,10 @@
     "@types/react-dom": "^18.3.5",
     "tsup": "^8.4.0",
     "typescript": "^5.3.3"
+  },
+  "homepage": "https://github.com/hunghg255/reactjs-signal/tree/main/packages/reactjs-signal-devtools",
+  "repository": "https://github.com/hunghg255/reactjs-signal/tree/main/packages/reactjs-signal-devtools",
+  "bugs": {
+    "url": "https://github.com/hunghg255/reactjs-signal/tree/main/packages/reactjs-signal-devtools"
   }
 }

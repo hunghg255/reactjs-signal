@@ -25,7 +25,7 @@ npm install reactjs-signal
 
 ## Devtools
 
-- [reactjs-signal-devtools](https://www.npmjs.com/package/reactjs-signal-devtools)
+- [reactjs-signal-devtools](https://github.com/hunghg255/reactjs-signal/tree/main/packages/reactjs-signal-devtools)
 
 ## Usage
 
