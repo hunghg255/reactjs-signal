@@ -33,7 +33,7 @@
   "devDependencies": {
     "@hunghg255/eslint-config": "^0.0.16",
     "@types/node": "^22.13.5",
-    "bumpp": "^9.2.1",
+    "bumpp": "^10.0.3",
     "eslint": "^9.21.0",
     "typescript": "^5.5.4"
   }

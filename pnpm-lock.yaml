@@ -15,8 +15,8 @@ importers:
         specifier: ^22.13.5
         version: 22.13.5
       bumpp:
-        specifier: ^9.2.1
-        version: 9.11.1
+        specifier: ^10.0.3
+        version: 10.0.3
       eslint:
         specifier: ^9.21.0
         version: 9.21.0
@@ -1166,6 +1166,10 @@ packages:
     resolution: {integrity: sha512-8+9WqebbFzpX9OR+Wa6O29asIogeRMzcGtAINdpMHHyAg10f05aSFVBbcEqGf/PXw1EjAZ+q2/bEBg3DvurK3Q==}
     dev: true
 
+  /args-tokenizer@0.3.0:
+    resolution: {integrity: sha512-xXAd7G2Mll5W8uo37GETpQ2VrE84M181Z7ugHFGQnJZ50M2mbOv0osSZ9VsSgPfJQ+LVG0prSi0th+ELMsno7Q==}
+    dev: true
+
   /array-buffer-byte-length@1.0.2:
     resolution: {integrity: sha512-LHE+8BuR7RYGDKvnrmcuSq3tDcKv9OFEXQt/HpbZhY7V6h0zlUXutnAD82GiFx9rdieCMjkvtcsPqBwgUl1Iiw==}
     engines: {node: '>= 0.4'}
@@ -1298,11 +1302,12 @@ packages:
     engines: {node: '>=6'}
     dev: true
 
-  /bumpp@9.11.1:
-    resolution: {integrity: sha512-jBHlab9NnRwrpHsockb5E+MBo0os2yS6S7i3cnN8hB6EkTardKQotmd0CFdOc8pubLz2fxj2AD6RGtrySVG6Mw==}
-    engines: {node: '>=10'}
+  /bumpp@10.0.3:
+    resolution: {integrity: sha512-5ONBZenNf9yfTIl2vFvDEfeeioidt0fG10SzjHQw50BRxOmXzsdY+lab1+SDMfiW6UyJ1xQqzFymcy5wa8YhTA==}
+    engines: {node: '>=18'}
     hasBin: true
     dependencies:
+      args-tokenizer: 0.3.0
       c12: 2.0.4
       cac: 6.7.14
       escalade: 3.2.0
@@ -1311,7 +1316,6 @@ packages:
       package-manager-detector: 0.2.9
       prompts: 2.4.2
       semver: 7.7.1
-      tiny-conventional-commits-parser: 0.0.1
       tinyexec: 0.3.2
       tinyglobby: 0.2.12
     transitivePeerDependencies:
@@ -4163,10 +4167,6 @@ packages:
     resolution: {integrity: sha512-RVZSIV5IG10Hk3enotrhvz0T9em6cyHBLkH/YAZuKqd8hRkKhSfCGIcP2KUY0EPxndzANBmNllzWPwak+bheSw==}
     dependencies:
       any-promise: 1.3.0
-    dev: true
-
-  /tiny-conventional-commits-parser@0.0.1:
-    resolution: {integrity: sha512-N5+AZWdBeHNSgTIaxvx0+9mFrnW4H1BbjQ84H7i3TuWSkno8Hju886hLaHZhE/hYEKrfrfl/uHurqpZJHDuYGQ==}
     dev: true
 
   /tinyexec@0.3.2:
