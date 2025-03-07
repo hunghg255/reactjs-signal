@@ -31,7 +31,7 @@ npm install reactjs-signal
 
 ```tsx
 import React from 'react';
-import { useSignal } from 'reactjs-signal';
+import { useSignal, createSignal } from 'reactjs-signal';
 
 const countSgnal = createSignal({ count: 0 })
 
