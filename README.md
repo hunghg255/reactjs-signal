@@ -33,8 +33,10 @@ npm install reactjs-signal
 import React from 'react';
 import { useSignal } from 'reactjs-signal';
 
+const countSgnal = createSignal({ count: 0 })
+
 const App = () => {
-  const [state, setState] = useSignal({ count: 0 });
+  const [state, setState] = useSignal(countSgnal);
 
   return (
     <div>
@@ -94,6 +96,7 @@ React hook returning `[value, setValue]` for a given Alien Signal. Uses `useSync
 
 ```typescript
 const countSignal = createSignal(0);
+
 function Counter() {
   const [count, setCount] = useSignal(countSignal);
   return <button onClick={() => setCount(count + 1)}>{count}</button>;
@@ -116,10 +119,13 @@ React hook returning only the current value of an Alien Signal (or computed). No
 
 ```typescript
 const countSignal = createSignal(0);
+
 const doubleSignal = createComputed(() => countSignal() * 2);
+
 function Display() {
   const count = useSignalValue(countSignal);
   const double = useSignalValue(doubleSignal);
+
   return <div>{count}, {double}</div>;
 }
 ```
