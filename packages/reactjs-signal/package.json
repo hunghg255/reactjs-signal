@@ -35,10 +35,10 @@
     "dev": "tsup --watch"
   },
   "dependencies": {
-    "alien-signals": "^1.0.4"
+    "alien-signals": "^2.0.1"
   },
   "peerDependencies": {
-    "alien-signals": ">=1.0.0",
+    "alien-signals": ">=2.0.1",
     "react": ">=18"
   },
   "devDependencies": {
