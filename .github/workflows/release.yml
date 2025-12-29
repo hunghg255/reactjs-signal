@@ -1,7 +1,8 @@
 name: Release
 
 permissions:
-  contents: write
+  id-token: write  # Required for OIDC
+  contents: read
 
 on:
   push:
@@ -25,5 +26,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
       - name: Publish
-        run: |
-          echo "Publishing"
+        run: npm publish --access=public --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+          NPM_CONFIG_PROVENANCE: true

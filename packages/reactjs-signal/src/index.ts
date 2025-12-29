@@ -260,3 +260,33 @@ export function useHydrateSignal<T>(alienSignal: TWritableSignal<T>, value: T): 
   hydratedSet.add(alienSignal);
   alienSignal(value);
 }
+
+/**
+ * Utility function to get the current value and setter of an Alien Signal.
+ *
+ * @example
+ * ```typescript
+ * const countSignal = createSignal(0);
+ * const { value, setValue } = getSignal(countSignal);
+ * console.log(value()); // current value
+ * setValue(10); // set value to 10
+ * ```
+ *
+ * @template T - The type of the signal value.
+ * @param {TWritableSignal<T>} alienSignal - The signal to read/write.
+ * @returns {{ value: () => T; setValue: (val: T | ((oldVal: T) => T)) => void }} An object with `value` and `setValue`.
+ */
+export function getSignal<T>(alienSignal: TWritableSignal<T>) {
+  const setValue = (val: T | ((oldVal: T) => T)) => {
+    if (typeof val === 'function') {
+      alienSignal((val as (oldVal: T) => T)(alienSignal()));
+    } else {
+      alienSignal(val);
+    }
+  };
+
+  return {
+    value: () => alienSignal(),
+    setValue,
+  };
+}

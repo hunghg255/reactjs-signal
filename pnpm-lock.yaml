@@ -27,8 +27,8 @@ importers:
   packages/reactjs-signal:
     dependencies:
       alien-signals:
-        specifier: ^2.0.1
-        version: 2.0.1
+        specifier: ^3.1.2
+        version: 3.1.2
       react:
         specifier: '>=18'
         version: 19.0.0
@@ -1132,8 +1132,8 @@ packages:
       uri-js: 4.4.1
     dev: true
 
-  /alien-signals@2.0.1:
-    resolution: {integrity: sha512-fvRLEA4BoO78crQ9otbxMfN/uCAgQsscaNLeAd7S3gzKjDJdsXuzAI1Cl3TFqFxbp4BdcyUJsH15NHjuvB/nvQ==}
+  /alien-signals@3.1.2:
+    resolution: {integrity: sha512-d9dYqZTS90WLiU0I5c6DHj/HcKkF8ZyGN3G5x8wSbslulz70KOxaqCT0hQCo9KOyhVqzqGojvNdJXoTumZOtcw==}
     dev: false
 
   /ansi-regex@5.0.1:

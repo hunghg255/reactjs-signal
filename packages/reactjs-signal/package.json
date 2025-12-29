@@ -1,7 +1,7 @@
 {
   "name": "reactjs-signal",
   "type": "module",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "",
   "author": "",
   "license": "ISC",
@@ -35,10 +35,10 @@
     "dev": "tsup --watch"
   },
   "dependencies": {
-    "alien-signals": "^2.0.1"
+    "alien-signals": "^3.1.2"
   },
   "peerDependencies": {
-    "alien-signals": ">=2.0.1",
+    "alien-signals": ">=3.1.2",
     "react": ">=18"
   },
   "devDependencies": {
