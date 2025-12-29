@@ -207,6 +207,21 @@ useHydrateSignal(countSignal, 10);
 
 - `EffectScope`: The created effect scope.
 
+### `getSignal`
+
+Gets the current value of an Alien Signal without subscribing to updates.
+
+- Use case: reading signal value outside React components.
+
+#### Example
+
+```typescript
+const countSignal = createSignal(0);
+const { value, setValue } = getSignal(countSignal);
+console.log(value()); // current value
+setValue(10); // set value to 10
+```
+
 
 ## Refer
 
