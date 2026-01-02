@@ -3,15 +3,23 @@ import reactLogo from './assets/react.svg';
 import viteLogo from '/vite.svg';
 
 import './App.css';
-import { createSignal, useSignal } from 'reactjs-signal';
+import { createSignal, useSignal, createSignalStorage, getSignal } from 'reactjs-signal';
 
-const countSingal = createSignal(0);
+const countSingal = createSignalStorage('count',0);
 
 if (import.meta.env.DEV) {
   import('reactjs-signal-devtools').then(({ mountStoreDevtool }) => {
     mountStoreDevtool('count', countSingal);
   });
 }
+
+const storedCount = getSignal(countSingal);
+
+// setInterval(() => {
+//   storedCount.setValue((count) => count + 1);
+//   console.log(storedCount.value());
+
+// }, 1000);
 
 function App() {
   const [count, setCount] = useSignal(countSingal);

@@ -1,0 +1,72 @@
+---
+title: Get Started
+description: Welcome to the documentation!
+---
+
+## Getting Started
+
+Welcome to **reactjs-signal**! A lightweight state management library for React using the Signal pattern to share store state across components.
+
+## Installation
+
+You can install `reactjs-signal` using your preferred package manager:
+
+<Tabs items={['npm', 'yarn', 'pnpm', 'bun']}>
+  <Tab value="npm">
+  ```bash
+  npm install reactjs-signal
+  ```
+  </Tab>
+  <Tab value="yarn">
+  ```bash
+  yarn add reactjs-signal
+  ```
+  </Tab>
+  <Tab value="pnpm">
+  ```bash
+  pnpm add reactjs-signal
+  ```
+  </Tab>
+  <Tab value="bun">
+  ```bash
+  bun add reactjs-signal
+  ```
+  </Tab>
+</Tabs>
+
+## Quick Start
+
+Once installed, you can start using `reactjs-signal` in your React application:
+
+```tsx
+import React from 'react';
+import { useSignal } from 'reactjs-signal';
+
+const App = () => {
+  const [state, setState] = useSignal({ count: 0 });
+
+  return (
+    <div>
+      <h1>Count: {state.count}</h1>
+      <button onClick={() => setState({ count: state.count + 1 })}>
+        Increment
+      </button>
+    </div>
+  );
+};
+
+export default App;
+```
+
+## Requirements
+
+- React 16.8 or higher (requires Hooks support)
+- TypeScript 4.0+ (optional, for TypeScript projects)
+
+## Next Steps
+
+Now that you have `reactjs-signal` installed, you can:
+
+- Explore the API documentation to learn about all available features
+- Check out more advanced examples and patterns
+- Install the [devtools extension](https://github.com/hunghg255/reactjs-signal/tree/main/packages/reactjs-signal-devtools) for debugging

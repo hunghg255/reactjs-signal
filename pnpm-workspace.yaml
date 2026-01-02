@@ -2,3 +2,4 @@ ignore-workspace-root-check: true
 packages:
   - playground
   - packages/*
+  - docs

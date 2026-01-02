@@ -1,0 +1,126 @@
+---
+title: Reactjs Signal Devtools
+description: Documentation for Reactjs Signal Devtools
+---
+
+## Overview
+
+**reactjs-signal-devtools** is a debugging tool that allows you to inspect your [reactjs-signal](https://github.com/hunghg255/reactjs-signal) store directly in React DevTools 🐻⚛️
+
+Monitor and debug your signal state changes in real-time using the familiar React DevTools interface.
+
+<img width="500" src="https://raw.githubusercontent.com/hunghg255/reactjs-signal/refs/heads/main/packages/reactjs-signal-devtools/assets/devtools.png" alt="Devtools Screenshot"/>
+
+## Installation
+
+Install the devtools package alongside `reactjs-signal`:
+
+<Tabs items={['npm', 'yarn', 'pnpm', 'bun']}>
+  <Tab value="npm">
+  ```bash
+  npm install reactjs-signal-devtools
+  ```
+  </Tab>
+  <Tab value="yarn">
+  ```bash
+  yarn add reactjs-signal-devtools
+  ```
+  </Tab>
+  <Tab value="pnpm">
+  ```bash
+  pnpm add reactjs-signal-devtools
+  ```
+  </Tab>
+  <Tab value="bun">
+  ```bash
+  bun add reactjs-signal-devtools
+  ```
+  </Tab>
+</Tabs>
+
+## Usage
+
+Import and mount the devtools in your development environment:
+
+```ts
+import { createSignal } from 'reactjs-signal';
+import { mountStoreDevtool } from 'reactjs-signal-devtools';
+
+export const signalCount = createSignal(0);
+
+if (process.env.NODE_ENV === 'development') {
+  mountStoreDevtool('Store', signalCount);
+}
+```
+
+### API
+
+#### `mountStoreDevtool(storeName, store, rootElement?)`
+
+Mounts the devtools for a specific signal store.
+
+**Parameters:**
+
+- `storeName` (string): A descriptive name for your store that will appear in React DevTools
+- `store` (TWritableSignal): The signal store you want to monitor
+- `rootElement` (HTMLElement, optional): Custom DOM element to mount the devtools. If not provided, a default element will be created
+
+**Example with multiple stores:**
+
+```ts
+import { createSignal } from 'reactjs-signal';
+import { mountStoreDevtool } from 'reactjs-signal-devtools';
+
+export const userStore = createSignal({ name: '', email: '' });
+export const cartStore = createSignal({ items: [], total: 0 });
+
+if (process.env.NODE_ENV === 'development') {
+  mountStoreDevtool('User Store', userStore);
+  mountStoreDevtool('Cart Store', cartStore);
+}
+```
+
+## Requirements
+
+- React 18.0 or higher
+- React DOM 18.0 or higher
+- reactjs-signal 1.0 or higher
+
+## Best Practices
+
+### Development Only
+
+Always wrap devtools in a development environment check to avoid including it in production builds:
+
+```ts
+if (process.env.NODE_ENV === 'development') {
+  mountStoreDevtool('My Store', myStore);
+}
+```
+
+### Descriptive Store Names
+
+Use clear, descriptive names for your stores to easily identify them in DevTools:
+
+```ts
+// ✅ Good
+mountStoreDevtool('User Authentication', authStore);
+mountStoreDevtool('Shopping Cart', cartStore);
+
+// ❌ Avoid
+mountStoreDevtool('Store1', store1);
+mountStoreDevtool('s', store);
+```
+
+## Troubleshooting
+
+### Devtools not appearing in React DevTools
+
+1. Ensure you're running in development mode
+2. Verify React DevTools extension is installed and active
+3. Check that the signal store is properly created with `createSignal`
+4. Confirm React version is 18.0 or higher
+
+### Multiple stores showing the same state
+
+Make sure each store has a unique `storeName` when calling `mountStoreDevtool`.

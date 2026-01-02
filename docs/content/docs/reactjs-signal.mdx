@@ -1,0 +1,453 @@
+---
+title: Reactjs Signal
+description: Complete API reference for reactjs-signal
+---
+
+## Overview
+
+**reactjs-signal** is a TypeScript library that provides React hooks built on top of [Alien Signals](https://github.com/stackblitz/alien-signals). It enables you to share store state across components using the Signal pattern with optimal performance.
+
+## Core API
+
+### `createSignal`
+
+Creates a writable signal that can be read and updated.
+
+#### Syntax
+
+```typescript
+function createSignal<T>(initialValue: T): IWritableSignal<T>
+```
+
+#### Parameters
+
+- `initialValue` (`T`): The initial value of the signal.
+
+#### Returns
+
+- `IWritableSignal<T>`: A writable signal that can be called to get or set its value.
+
+#### Example
+
+```typescript
+import { createSignal } from 'reactjs-signal';
+
+// Create a signal with initial value
+const countSignal = createSignal(0);
+
+// Read the current value
+console.log(countSignal()); // 0
+
+// Update the value
+countSignal(10); // sets the value to 10
+console.log(countSignal()); // 10
+```
+
+---
+
+### `createComputed`
+
+Creates a computed signal that automatically updates when its dependencies change.
+
+#### Syntax
+
+```typescript
+function createComputed<T>(fn: () => T): ISignal<T>
+```
+
+#### Parameters
+
+- `fn` (`() => T`): A getter function that computes and returns a value based on other signals.
+
+#### Returns
+
+- `ISignal<T>`: A read-only computed signal.
+
+#### Example
+
+```typescript
+import { createSignal, createComputed } from 'reactjs-signal';
+
+const countSignal = createSignal(1);
+const doubleSignal = createComputed(() => countSignal() * 2);
+
+console.log(doubleSignal()); // 2
+
+countSignal(5);
+console.log(doubleSignal()); // 10
+```
+
+---
+
+## React Hooks
+
+### `useSignal`
+
+React hook that returns `[value, setValue]` for a given signal. Uses `useSyncExternalStore` for concurrency-safe re-renders.
+
+#### Syntax
+
+```typescript
+function useSignal<T>(
+  alienSignal: IWritableSignal<T>
+): [T, (val: T | ((oldVal: T) => T)) => void]
+```
+
+#### Parameters
+
+- `alienSignal` (`IWritableSignal<T>`): The signal to read and write.
+
+#### Returns
+
+- `[T, (val: T | ((oldVal: T) => T)) => void]`: A tuple containing:
+  - Current value
+  - Setter function (accepts either a new value or an updater function)
+
+#### Example
+
+```typescript
+import { createSignal, useSignal } from 'reactjs-signal';
+
+const countSignal = createSignal(0);
+
+function Counter() {
+  const [count, setCount] = useSignal(countSignal);
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+      <button onClick={() => setCount(c => c + 1)}>Increment (functional)</button>
+      <button onClick={() => setCount(0)}>Reset</button>
+    </div>
+  );
+}
+```
+
+---
+
+### `useSignalValue`
+
+React hook that returns only the current value of a signal. No setter is provided. Use this when you only need to read the value.
+
+#### Syntax
+
+```typescript
+function useSignalValue<T>(alienSignal: ISignal<T>): T
+```
+
+#### Parameters
+
+- `alienSignal` (`ISignal<T>`): The signal to read.
+
+#### Returns
+
+- `T`: The current value of the signal.
+
+#### Example
+
+```typescript
+import { createSignal, createComputed, useSignalValue } from 'reactjs-signal';
+
+const countSignal = createSignal(0);
+const doubleSignal = createComputed(() => countSignal() * 2);
+
+function Display() {
+  const count = useSignalValue(countSignal);
+  const double = useSignalValue(doubleSignal);
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <p>Double: {double}</p>
+    </div>
+  );
+}
+```
+
+---
+
+### `useSetSignal`
+
+React hook that returns only a setter function for a signal. No current value is provided. Similar to Jotai's `useSetAtom`. Useful when a component only needs to update a signal without subscribing to its changes.
+
+#### Syntax
+
+```typescript
+function useSetSignal<T>(
+  alienSignal: IWritableSignal<T>
+): (val: T | ((oldVal: T) => T)) => void
+```
+
+#### Parameters
+
+- `alienSignal` (`IWritableSignal<T>`): The signal to write.
+
+#### Returns
+
+- `(val: T | ((oldVal: T) => T)) => void`: A setter function.
+
+#### Example
+
+```typescript
+import { createSignal, useSetSignal } from 'reactjs-signal';
+
+const countSignal = createSignal(0);
+
+function Incrementor() {
+  // This component won't re-render when countSignal changes
+  const setCount = useSetSignal(countSignal);
+
+  return (
+    <button onClick={() => setCount(c => c + 1)}>
+      Increment
+    </button>
+  );
+}
+```
+
+---
+
+### `useSignalEffect`
+
+React hook for running side effects whenever the signals used within the effect function change. The effect is automatically cleaned up on component unmount.
+
+#### Syntax
+
+```typescript
+function useSignalEffect(fn: () => void): void
+```
+
+#### Parameters
+
+- `fn` (`() => void`): The effect function to run. Any signals accessed within this function will be tracked as dependencies.
+
+#### Example
+
+```typescript
+import { createSignal, useSignalEffect } from 'reactjs-signal';
+
+const countSignal = createSignal(0);
+
+function Logger() {
+  useSignalEffect(() => {
+    console.log('Count changed:', countSignal());
+
+    // You can access multiple signals
+    // The effect will run whenever any of them change
+  });
+
+  return <div>Check the console for logs</div>;
+}
+```
+
+#### Advanced Example
+
+```typescript
+import { createSignal, useSignalEffect, useSignal } from 'reactjs-signal';
+
+const userSignal = createSignal({ id: 1, name: 'John' });
+
+function UserProfile() {
+  const [user] = useSignal(userSignal);
+
+  useSignalEffect(() => {
+    // This effect runs whenever userSignal changes
+    console.log('Fetching user data for:', userSignal().id);
+
+    // Cleanup function (optional)
+    return () => {
+      console.log('Cleanup previous effect');
+    };
+  });
+
+  return <div>{user.name}</div>;
+}
+```
+
+---
+
+### `useHydrateSignal`
+
+React hook to initialize a signal with a value during server-side rendering (SSR) hydration. Use this to ensure the signal has the correct initial value when hydrating from server-rendered HTML.
+
+#### Syntax
+
+```typescript
+function useHydrateSignal<T>(alienSignal: IWritableSignal<T>, value: T): void
+```
+
+#### Parameters
+
+- `alienSignal` (`IWritableSignal<T>`): The signal to hydrate.
+- `value` (`T`): The initial value to set during hydration.
+
+#### Example
+
+```typescript
+import { createSignal, useHydrateSignal, useSignalValue } from 'reactjs-signal';
+
+const countSignal = createSignal(0);
+
+function HydratedCounter({ initialCount }: { initialCount: number }) {
+  // Hydrate the signal with server-provided value
+  useHydrateSignal(countSignal, initialCount);
+
+  const count = useSignalValue(countSignal);
+
+  return <div>Count: {count}</div>;
+}
+
+// On the server
+<HydratedCounter initialCount={10} />
+```
+
+---
+
+## Utility Functions
+
+### `getSignal`
+
+Gets the current value and setter of a signal without subscribing to updates. Use this when you need to access or modify a signal outside of React components.
+
+#### Syntax
+
+```typescript
+function getSignal<T>(alienSignal: IWritableSignal<T>): {
+  value: () => T;
+  setValue: (val: T) => void;
+}
+```
+
+#### Parameters
+
+- `alienSignal` (`IWritableSignal<T>`): The signal to access.
+
+#### Returns
+
+An object containing:
+- `value` (`() => T`): Function to get the current value
+- `setValue` (`(val: T) => void`): Function to set a new value
+
+#### Example
+
+```typescript
+import { createSignal, getSignal } from 'reactjs-signal';
+
+const countSignal = createSignal(0);
+
+// Access signal outside React components
+const { value, setValue } = getSignal(countSignal);
+
+console.log(value()); // 0
+
+setValue(10);
+console.log(value()); // 10
+
+// Use case: in event handlers, API calls, etc.
+async function fetchData() {
+  const { setValue } = getSignal(loadingSignal);
+  setValue(true);
+
+  const response = await fetch('/api/data');
+  const data = await response.json();
+
+  setValue(false);
+  return data;
+}
+```
+
+---
+
+## Complete Example
+
+Here's a complete example demonstrating multiple features:
+
+```typescript
+import React from 'react';
+import {
+  createSignal,
+  createComputed,
+  useSignal,
+  useSignalValue,
+  useSetSignal,
+  useSignalEffect
+} from 'reactjs-signal';
+
+// Create signals
+const countSignal = createSignal(0);
+const nameSignal = createSignal('John');
+
+// Create computed signal
+const messageSignal = createComputed(() =>
+  `${nameSignal()} clicked ${countSignal()} times`
+);
+
+function Counter() {
+  const [count, setCount] = useSignal(countSignal);
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount(c => c + 1)}>+</button>
+      <button onClick={() => setCount(c => c - 1)}>-</button>
+    </div>
+  );
+}
+
+function Display() {
+  const message = useSignalValue(messageSignal);
+
+  return <p>{message}</p>;
+}
+
+function ResetButton() {
+  const setCount = useSetSignal(countSignal);
+
+  return <button onClick={() => setCount(0)}>Reset</button>;
+}
+
+function Logger() {
+  useSignalEffect(() => {
+    console.log('State changed:', {
+      count: countSignal(),
+      name: nameSignal()
+    });
+  });
+
+  return null;
+}
+
+function App() {
+  return (
+    <div>
+      <Counter />
+      <Display />
+      <ResetButton />
+      <Logger />
+    </div>
+  );
+}
+```
+
+---
+
+## TypeScript Support
+
+All APIs are fully typed with TypeScript. The library exports the following type definitions:
+
+```typescript
+interface ISignal<T> {
+  (): T;
+}
+
+interface IWritableSignal<T> extends ISignal<T> {
+  (value: T): void;
+}
+```
+
+---
+
+## Credits
+
+React Alien Signals is built on top of [Alien Signals](https://github.com/stackblitz/alien-signals), providing a React-friendly API for this powerful signal library.
