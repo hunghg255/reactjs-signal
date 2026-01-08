@@ -6,7 +6,7 @@
  * @module reactjs-signal
  */
 
-import { useEffect, useSyncExternalStore } from 'react';
+import { useCallback, useEffect, useSyncExternalStore } from 'react';
 
 import { computed, effect, signal } from 'alien-signals';
 
@@ -39,41 +39,7 @@ function getHydratedSet (store: TWritableSignal<any>) {
  * @param {T} initialValue - The initial value of the signal.
  * @returns {TWritableSignal<T>} The created Alien Signal.
  */
-export function createSignal<T>(initialValue: T): TWritableSignal<T> {
-  return signal<T>(initialValue);
-}
-
-/**
- * Creates a writable Alien Signal that persists its value in localStorage.
- *
- * @template T - The type of the signal value.
- * @param {string} key - The localStorage key to use for persistence.
- * @param {T} initialValue - The initial value of the signal.
- * @returns {TWritableSignal<T>} The created Alien Signal.
- */
-export function createSignalStorage<T>(key: string, initialValue: T): TWritableSignal<T> {
-  const storedValue = localStorage.getItem(key);
-  let initial: T;
-
-  if (storedValue) {
-    try {
-      initial = JSON.parse(storedValue) as T;
-    } catch (e) {
-      console.error(`Error parsing localStorage for key "${key}", using initial value.`, e);
-      initial = initialValue;
-    }
-  } else {
-    initial = initialValue;
-  }
-
-  const signalInstance = createSignal<T>(initial);
-
-  createEffect(() => {
-    localStorage.setItem(key, JSON.stringify(signalInstance()));
-  });
-
-  return signalInstance;
-}
+export const createSignal = signal;
 
 /**
  * Creates a computed Alien Signal based on a getter function.
@@ -88,9 +54,7 @@ export function createSignalStorage<T>(key: string, initialValue: T): TWritableS
  * @param {() => T} fn - A getter function returning a computed value.
  * @returns {ISignal<T>} The created computed signal.
  */
-export function createComputed<T>(fn: () => T) {
-  return computed<T>(fn);
-}
+export const createComputed = computed;
 
 /**
  * Creates a side effect in Alien Signals.
@@ -107,9 +71,7 @@ export function createComputed<T>(fn: () => T) {
  * @param {() => T} fn - A function that will run whenever its tracked signals update.
  * @returns {Effect<T>} The created effect object.
  */
-export function createEffect<T>(fn: () => T) {
-  return effect(fn);
-}
+export const createEffect = effect;
 
 /**
  * React hook returning `[value, setValue]` for a given Alien Signal.
@@ -143,13 +105,13 @@ export function useSignal<T>(
     () => alienSignal(), // server snapshot
   );
 
-  const setValue = (val: T | ((oldVal: T) => T)) => {
+  const setValue = useCallback((val: T | ((oldVal: T) => T)) => {
     if (typeof val === 'function') {
       alienSignal((val as (oldVal: T) => T)(alienSignal()));
     } else {
       alienSignal(val);
     }
-  };
+  }, []);
 
   return [value, setValue];
 }
@@ -207,13 +169,13 @@ export function useSignalValue<T>(alienSignal: TWritableSignal<T>): T {
 export function useSetSignal<T>(
   alienSignal: TWritableSignal<T>,
 ): (val: T | ((oldVal: T) => T)) => void {
-  return (val) => {
+  return useCallback((val) => {
     if (typeof val === 'function') {
       alienSignal((val as (oldVal: T) => T)(alienSignal()));
     } else {
       alienSignal(val);
     }
-  };
+  }, []);
 }
 
 /**

@@ -3,9 +3,9 @@ import reactLogo from './assets/react.svg';
 import viteLogo from '/vite.svg';
 
 import './App.css';
-import { createSignal, useSignal, createSignalStorage, getSignal } from 'reactjs-signal';
+import { createSignal, useSignal, getSignal } from 'reactjs-signal';
 
-const countSingal = createSignalStorage('count',0);
+const countSingal = createSignal(0);
 
 if (import.meta.env.DEV) {
   import('reactjs-signal-devtools').then(({ mountStoreDevtool }) => {
